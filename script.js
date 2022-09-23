@@ -1,7 +1,8 @@
 const book = [];
+let caritampil=[];
 const Tampil = 'Tampil';
 
-// const SaveItem= 'Simpan';
+const Carisaja = 'cari';
 const SessionBookID = [] ;
 
 function GenID() {
@@ -77,6 +78,7 @@ function GenID() {
   }
 
   function CariData(ID) {
+    
     for (const Databook of book) {
         if (Databook.id === ID){
             return Databook;
@@ -85,6 +87,61 @@ function GenID() {
     return null;
   }
   
+  function TampilCari(Gendata1) {
+    const {id,title,author,year,isCompleted} = Gendata1
+
+    const Judultext = document.createElement('h3');
+    Judultext.innerText = title;
+
+    const Penulistext = document.createElement('p');
+    Penulistext.innerText = author;
+
+    const Tahuntext = document.createElement('p');
+    Tahuntext.innerText = year;
+
+
+    const Gabungtext = document.createElement('article');
+    Gabungtext.classList.add('book_item');
+    Gabungtext.append(Judultext,Penulistext,Tahuntext)
+    Gabungtext.setAttribute('id', `${id}`)
+
+    const Tombol = document.createElement('div');
+    Tombol.classList.add('action');
+    // Tombol.append(Gabungtext);
+    // Tombol.setAttribute('id', `${id}`)
+
+    if (isCompleted) {
+        const Tombolselesai = document.createElement('button')
+        Tombolselesai.classList.add('green')
+        Tombolselesai.innerText = "Belum selesai di Baca";
+        Tombolselesai.addEventListener('click',function(){
+            SelesaiBaca(id);
+                
+        })
+        Tombol.append(Tombolselesai);
+        Gabungtext.append(Tombol);
+    } else {
+        const TombolBelum = document.createElement('button')
+        TombolBelum.classList.add('green');
+        TombolBelum.innerText = "selesai di Baca";
+        TombolBelum.addEventListener('click',function(){
+            BelumBaca(id);
+            
+        })
+        Tombol.append(TombolBelum);
+        Gabungtext.append(Tombol);
+    }
+    const TombolBuang = document.createElement('button')
+    TombolBuang.classList.add('red');
+    TombolBuang.innerText = "Hapus buku";
+    TombolBuang.addEventListener('click',function(){
+        Hapus(id);
+
+    })
+    Tombol.append(TombolBuang)
+    Gabungtext.append(Tombol)
+    return Gabungtext;
+  }
 
   function SelesaiBaca(id) {
     const targetBook = CariData(id);
@@ -124,16 +181,70 @@ function GenID() {
     document.dispatchEvent(new Event(Tampil));
   }
 
-
-
-
-document.addEventListener('DOMContentLoaded',function(){
+function Submit() {
     const submit = document.getElementById('bookSubmit');
     submit.addEventListener('click',function(evet){
+        evet.preventDefault();
+        inputdata();
+        });
+}
+function CariNama(name) {
+    for (const Databook of book) {
+        if (Databook.title === name){
+            return Databook;
+        }
+    }
+    return null;
+  }
+
+function CariBuku(){
+
+    const cariJudul = document.getElementById('searchBookTitle').value; 
+    const targetBook = CariNama(cariJudul);
+    console.log(targetBook);
+    if (targetBook == null) return ;
+    // alert(targetBook.value)
+    caritampil = [];
+    caritampil.push(targetBook);
+    document.dispatchEvent (new Event(Carisaja));
+}
+
+function SubmitCari(){
+    const tombolcari = document.getElementById('searchSubmit');
+    tombolcari.addEventListener('click',function(evet){
     evet.preventDefault();
-    inputdata();
-    });
+
+    CariBuku();
+    //fungsi
+    })
+    
+}
+
+document.addEventListener('DOMContentLoaded',function(){
+    Submit();
+    SubmitCari();
+
   });
+
+  document.addEventListener(Carisaja,function(){
+
+    const incompleteBookshelfList = document.getElementById('incompleteBookshelfList');
+    const completeBookshelfList = document.getElementById('completeBookshelfList');
+
+    incompleteBookshelfList.innerHTML = null;
+    completeBookshelfList.innerHTML = null;
+    for (const Databook of caritampil){
+        // console.log(Databook);
+        console.log(book);
+        const Elementbook = TampilCari(Databook);
+        if (Databook.isCompleted) {
+            completeBookshelfList.append(Elementbook);
+        } else {
+            incompleteBookshelfList.append(Elementbook);
+        }
+       
+    }
+})
 
 document.addEventListener(Tampil,function(){
 
@@ -143,7 +254,6 @@ document.addEventListener(Tampil,function(){
     incompleteBookshelfList.innerHTML = null;
     completeBookshelfList.innerHTML = null;
     for (const Databook of book){
-
         const Elementbook = Containerdata(Databook);
         if (Databook.isCompleted) {
             completeBookshelfList.append(Elementbook);
@@ -156,8 +266,6 @@ document.addEventListener(Tampil,function(){
 
 //storage
 window.addEventListener('load',function(){
-    alert('init');
-    //init
     if (typeof(Storage) !== "undefined"){
         if (localStorage.getItem(SessionBookID)!==null){
             Ambildatalocal()
@@ -173,9 +281,6 @@ function Simpan() {
     // document.dispatchEvent(new Event(SaveItem));
 }
 
-// document.addEventListener(SaveItem,function(){
-//     console.log(localStorage.getItem(SessionBookID));
-// })
 
 function Ambildatalocal(){
     const Serialdata = localStorage.getItem(SessionBookID);
