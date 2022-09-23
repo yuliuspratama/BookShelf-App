@@ -17,62 +17,76 @@ function GenID() {
   function Containerdata(Gendata1) {
     const {id,title,author,year,isCompleted} = Gendata1
 
-    const Judultext = document.createElement('h2');
+    const Judultext = document.createElement('h3');
     Judultext.innerText = title;
 
-    const Penulistext = document.createElement('h3');
+    const Penulistext = document.createElement('p');
     Penulistext.innerText = author;
 
     const Tahuntext = document.createElement('p');
     Tahuntext.innerText = year;
 
-    const Gabungtext = document.createElement('div');
-    Gabungtext.classList.add('inner');
+    const Gabungtext = document.createElement('article');
+    Gabungtext.classList.add('book_item');
     Gabungtext.append(Judultext,Penulistext,Tahuntext)
+    Gabungtext.setAttribute('id', `${id}`)
 
-    const penampung = document.createElement('div');
-    penampung.classList.add('Book-items','black');
-    penampung.append(Gabungtext);
-    penampung.setAttribute('id', `${id}`)
+    const Tombol = document.createElement('div');
+    Tombol.classList.add('action');
+    // Tombol.append(Gabungtext);
+    // Tombol.setAttribute('id', `${id}`)
 
-    return penampung;
+    if (isCompleted) {
+        const Tombolselesai = document.createElement('button')
+        Tombolselesai.classList.add('green')
+        Tombolselesai.innerText = "selesai di Baca";
+        Tombolselesai.addEventListener('click',function(){
+                // fungsi
+                
+        })
+        Tombol.append(Tombolselesai);
+        Gabungtext.append(Tombol);
+    } else {
+        const TombolBelum = document.createElement('button')
+        TombolBelum.classList.add('green');
+        TombolBelum.innerText = "Belum selesai di Baca";
+        TombolBelum.addEventListener('click',function(){
+                // fungsi
+                
+        })
+
+        Tombol.append(TombolBelum);
+        Gabungtext.append(Tombol);
+    }
+    const TombolBuang = document.createElement('button')
+    TombolBuang.classList.add('red');
+    TombolBuang.innerText = "Hapus buku";
+    TombolBuang.addEventListener('click',function(){
+            //fungsi
+    })
+    Tombol.append(TombolBuang)
+    Gabungtext.append(Tombol)
+    return Gabungtext;
   }
 
   function inputdata() {
     const textJudul = document.getElementById('inputBookTitle').value; 
-    // alert(textJudul);
     const textPenulis = document.getElementById('inputBookAuthor').value;
-    // alert(textPenulis);
     const textTahun = document.getElementById('inputBookYear').value;
-    // alert(textTahun);
     const GenID1 = GenID();
-    // alert(GenID1);
     
-    const ItemData = GenData(GenID,textJudul,textPenulis,textTahun);
+    const ItemData = GenData(GenID1,textJudul,textPenulis,textTahun);
     book.push(ItemData);
-    // alert(ItemData);
     document.dispatchEvent(new Event(Tampil));
   }
 
 
 
-// document.addEventListener('DOMContentLoaded',function(){
-//     const submit = document.getElementById('bookSubmit');
-  
-//     submit.addEventListener('click',function(evet){
-//       evet.preventDefault();
-//     const textTitle = document.createElement('h2');
-//     textTitle.innerText = GenID();
-//     document.body.appendChild(textTitle);
-  
-//     });
-//   });
 
 document.addEventListener('DOMContentLoaded',function(){
     const submit = document.getElementById('bookSubmit');
     submit.addEventListener('click',function(evet){
     evet.preventDefault();
-    // alert("masuk1");
     inputdata();
     });
   });
