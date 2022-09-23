@@ -1,6 +1,9 @@
 const book = [];
 const Tampil = 'Tampil';
 
+// const SaveItem= 'Simpan';
+const SessionBookID = [] ;
+
 function GenID() {
     return +new Date();
   }
@@ -45,6 +48,7 @@ function GenID() {
             SelesaiBaca(id);
                 
         })
+        Simpan();
         Tombol.append(Tombolselesai);
         Gabungtext.append(Tombol);
     } else {
@@ -53,9 +57,9 @@ function GenID() {
         TombolBelum.innerText = "selesai di Baca";
         TombolBelum.addEventListener('click',function(){
             BelumBaca(id);
-                
+            
         })
-
+        Simpan();
         Tombol.append(TombolBelum);
         Gabungtext.append(Tombol);
     }
@@ -64,7 +68,9 @@ function GenID() {
     TombolBuang.innerText = "Hapus buku";
     TombolBuang.addEventListener('click',function(){
         Hapus(id);
+
     })
+    Simpan();
     Tombol.append(TombolBuang)
     Gabungtext.append(Tombol)
     return Gabungtext;
@@ -101,6 +107,7 @@ function GenID() {
     if (targetBook == null) return ;
 
     book.splice(targetBook,1)
+    localStorage.setItem(SessionBookID, "");
     document.dispatchEvent(new Event(Tampil));
   }
 
@@ -112,6 +119,7 @@ function GenID() {
     const GenID1 = GenID();
     // alert(Selesaicentang);
     const ItemData = GenData(GenID1,textJudul,textPenulis,textTahun,Selesaicentang);
+    // localStorage.setItem(SessionBookID,JSON.stringify(ItemData));
     book.push(ItemData);
     document.dispatchEvent(new Event(Tampil));
   }
@@ -145,3 +153,39 @@ document.addEventListener(Tampil,function(){
        
     }
 })
+
+//storage
+window.addEventListener('load',function(){
+    alert('init');
+    //init
+    if (typeof(Storage) !== "undefined"){
+        if (localStorage.getItem(SessionBookID)!==null){
+            Ambildatalocal()
+        }          
+        } else {
+            alert('Browser yang Anda gunakan tidak mendukung Web Storage');
+          }
+})
+
+function Simpan() {
+    const datasimpan = JSON.stringify(book);
+    localStorage.setItem(SessionBookID, datasimpan);
+    // document.dispatchEvent(new Event(SaveItem));
+}
+
+// document.addEventListener(SaveItem,function(){
+//     console.log(localStorage.getItem(SessionBookID));
+// })
+
+function Ambildatalocal(){
+    const Serialdata = localStorage.getItem(SessionBookID);
+    let data = JSON.parse(Serialdata);
+
+    if (data !== null) {
+        for (const Databook of data){
+            book.push(Databook);
+        }
+    }
+
+    document.dispatchEvent(new Event(Tampil));
+}
