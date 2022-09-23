@@ -26,6 +26,7 @@ function GenID() {
     const Tahuntext = document.createElement('p');
     Tahuntext.innerText = year;
 
+
     const Gabungtext = document.createElement('article');
     Gabungtext.classList.add('book_item');
     Gabungtext.append(Judultext,Penulistext,Tahuntext)
@@ -39,9 +40,9 @@ function GenID() {
     if (isCompleted) {
         const Tombolselesai = document.createElement('button')
         Tombolselesai.classList.add('green')
-        Tombolselesai.innerText = "selesai di Baca";
+        Tombolselesai.innerText = "Belum selesai di Baca";
         Tombolselesai.addEventListener('click',function(){
-                // fungsi
+            SelesaiBaca(id);
                 
         })
         Tombol.append(Tombolselesai);
@@ -49,9 +50,9 @@ function GenID() {
     } else {
         const TombolBelum = document.createElement('button')
         TombolBelum.classList.add('green');
-        TombolBelum.innerText = "Belum selesai di Baca";
+        TombolBelum.innerText = "selesai di Baca";
         TombolBelum.addEventListener('click',function(){
-                // fungsi
+            BelumBaca(id);
                 
         })
 
@@ -62,20 +63,55 @@ function GenID() {
     TombolBuang.classList.add('red');
     TombolBuang.innerText = "Hapus buku";
     TombolBuang.addEventListener('click',function(){
-            //fungsi
+        Hapus(id);
     })
     Tombol.append(TombolBuang)
     Gabungtext.append(Tombol)
     return Gabungtext;
   }
 
+  function CariData(ID) {
+    for (const Databook of book) {
+        if (Databook.id === ID){
+            return Databook;
+        }
+    }
+    return null;
+  }
+  
+
+  function SelesaiBaca(id) {
+    const targetBook = CariData(id);
+    if (targetBook == null) return ;
+
+    targetBook.isCompleted = false;
+    document.dispatchEvent(new Event(Tampil));
+  }
+
+  function BelumBaca(id) {
+    const targetBook = CariData(id);
+    if (targetBook == null) return ;
+
+    targetBook.isCompleted = true;
+    document.dispatchEvent(new Event(Tampil));
+  }
+
+  function Hapus(id) {
+    const targetBook = CariData(id);
+    if (targetBook == null) return ;
+
+    book.splice(targetBook,1)
+    document.dispatchEvent(new Event(Tampil));
+  }
+
   function inputdata() {
     const textJudul = document.getElementById('inputBookTitle').value; 
     const textPenulis = document.getElementById('inputBookAuthor').value;
     const textTahun = document.getElementById('inputBookYear').value;
+    const Selesaicentang = document.getElementById('inputBookIsComplete').checked;
     const GenID1 = GenID();
-    
-    const ItemData = GenData(GenID1,textJudul,textPenulis,textTahun);
+    // alert(Selesaicentang);
+    const ItemData = GenData(GenID1,textJudul,textPenulis,textTahun,Selesaicentang);
     book.push(ItemData);
     document.dispatchEvent(new Event(Tampil));
   }
@@ -95,9 +131,17 @@ document.addEventListener(Tampil,function(){
 
     const incompleteBookshelfList = document.getElementById('incompleteBookshelfList');
     const completeBookshelfList = document.getElementById('completeBookshelfList');
-    // alert("masuk");
+
+    incompleteBookshelfList.innerHTML = null;
+    completeBookshelfList.innerHTML = null;
     for (const Databook of book){
+
         const Elementbook = Containerdata(Databook);
-        incompleteBookshelfList.append(Elementbook);
+        if (Databook.isCompleted) {
+            completeBookshelfList.append(Elementbook);
+        } else {
+            incompleteBookshelfList.append(Elementbook);
+        }
+       
     }
 })
